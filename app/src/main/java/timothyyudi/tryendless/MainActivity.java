@@ -19,9 +19,14 @@ public class MainActivity extends AppCompatActivity {
     MyCustomAdapter mAdapter;
     LinearLayoutManager mLinearLayoutManager;
     EndlessRecyclerViewScrollListener scrollListener;
+    SwipeRefreshLayout swipeRefreshLayout;
 
+    //for new items when load old data
     int dummyUpperCount=99;
     int dummyLowerCount=90;
+    //for new items when load new data
+    int dummyUpperCount2=109;
+    int dummyLowerCount2=100;
     String TAG = "TryEndless";
 
     @Override
@@ -35,22 +40,22 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mDummyList.addAll(mDummyList.size(), addBulkOldDummyDataList());
-                mAdapter.notifyItemInserted(mDummyList.size());
+
             }
         });
 
         //scroll up then pull to refresh
-        SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                //Your refresh code here
+                loadNextNewDataFromApi(0,0);
             }
         });
         //end of scroll up then pull to refresh
 
         mDummyList = new ArrayList<>();
+
         mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
         mLinearLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
@@ -64,16 +69,28 @@ public class MainActivity extends AppCompatActivity {
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
                 // Triggered only when new data needs to be appended to the list
                 // Add whatever code is needed to append new items to the bottom of the list
-//                loadNextDataFromApi(page);
-                addBulkOldDummyDataList();
+                loadNextOldDataFromApi(page);
             }
         };
         // Adds the scroll listener to RecyclerView
         mRecyclerView.addOnScrollListener(scrollListener);
 
+        //load initial data
+        loadInitialDataFromApi();
     }
 
-    public ArrayList<DummyModel> addBulkOldDummyDataList(){
+    public  void loadInitialDataFromApi(){
+        mDummyList.add(new DummyModel("Initial Data","InitialData@gmail.com"));
+        mAdapter.notifyItemInserted(mDummyList.size());
+    }
+
+    // Append the next page of data into the adapter
+    // This method probably sends out a network request and appends new data items to your adapter.
+    public void loadNextOldDataFromApi(int offset) {
+        // Send an API request to retrieve appropriate paginated data
+        //  --> Send the request including an offset value (i.e `page`) as a query parameter.
+        //  --> Deserialize and construct new model objects from the API response
+        //  --> Append the new data objects to the existing set of items inside the array of items
         ArrayList<DummyModel> tempDummyList = new ArrayList<>();
         for(int i = dummyUpperCount; i>=dummyLowerCount;i--){
             tempDummyList.add(new DummyModel("Alibaba"+i,"alibaba"+i+"@gmail.com"));
@@ -81,16 +98,22 @@ public class MainActivity extends AppCompatActivity {
         }
         dummyLowerCount-=10;
         dummyUpperCount-=10;
-        return tempDummyList;
+        mDummyList.addAll(mDummyList.size(), tempDummyList);
+        //  --> Notify the adapter of the new items made with `notifyItemRangeInserted()`
+        mAdapter.notifyItemInserted(mDummyList.size());
     }
 
-    // Append the next page of data into the adapter
-    // This method probably sends out a network request and appends new data items to your adapter.
-    public void loadNextDataFromApi(int offset) {
-        // Send an API request to retrieve appropriate paginated data
-        //  --> Send the request including an offset value (i.e `page`) as a query parameter.
-        //  --> Deserialize and construct new model objects from the API response
-        //  --> Append the new data objects to the existing set of items inside the array of items
-        //  --> Notify the adapter of the new items made with `notifyItemRangeInserted()`
+    public void loadNextNewDataFromApi(int offset,int secondaryOffset){
+        ArrayList<DummyModel> tempDummyList = new ArrayList<>();
+        for(int i = dummyUpperCount2; i>=dummyLowerCount2;i--){
+            tempDummyList.add(new DummyModel("Alibaba"+i,"alibaba"+i+"@gmail.com"));
+            Log.v(TAG,"Alibaba"+i);
+        }
+        dummyLowerCount2+=10;
+        dummyUpperCount2+=10;
+        mDummyList.addAll(0, tempDummyList);
+        mAdapter.notifyItemRangeInserted(0,tempDummyList.size());
+        mRecyclerView.scrollToPosition(0);
+        swipeRefreshLayout.setRefreshing(false);
     }
 }
