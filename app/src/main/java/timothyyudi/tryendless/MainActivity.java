@@ -1,6 +1,5 @@
 package timothyyudi.tryendless;
 
-import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,12 +8,8 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -23,10 +18,11 @@ public class MainActivity extends AppCompatActivity {
 
     RecyclerView mRecyclerView;
     ArrayList<DummyModel> mDummyList;
-    MyCustomAdapter mAdapter;
+    MyRecyclerViewAdapter mAdapter;
     LinearLayoutManager mLinearLayoutManager;
     EndlessRecyclerViewScrollListener scrollListener;
     SwipeRefreshLayout swipeRefreshLayout;
+    Context mCtx;
 
     //for new items when load old data
     int dummyUpperCount=99;
@@ -43,15 +39,17 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        mCtx = this;
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Intent searchIntent = new Intent(mCtx,SearchActivity.class);
+                startActivity(searchIntent);
             }
-        });
 
-        handleIntent(getIntent());
+        });
 
         //scroll up then pull to refresh
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
@@ -69,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         mLinearLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
 
-        mAdapter = new MyCustomAdapter(this,mDummyList);
+        mAdapter = new MyRecyclerViewAdapter(this,mDummyList);
         mRecyclerView.setAdapter(mAdapter);
 
         // Retain an instance so that you can call `resetState()` for fresh searches
@@ -126,30 +124,4 @@ public class MainActivity extends AppCompatActivity {
         swipeRefreshLayout.setRefreshing(false);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_main, menu);
-
-        // Associate searchable configuration with the SearchView
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-
-        return true;
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        handleIntent(intent);
-    }
-
-    private void handleIntent(Intent intent) {
-
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            String query = intent.getStringExtra(SearchManager.QUERY);
-            //use the query to search your data somehow
-        }
-    }
 }

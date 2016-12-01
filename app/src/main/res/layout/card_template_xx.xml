@@ -15,26 +15,31 @@
         android:elevation="4dp"
         card_view:cardUseCompatPadding="true">
 
-        <LinearLayout
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal" android:padding="16dp">
+            android:orientation="vertical">
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="240dp"
+                android:scaleType="fitCenter"
+                android:id="@+id/ivCardImage"
                 android:src="@mipmap/ic_launcher"/>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:layout_gravity="bottom|center_horizontal"
+                android:padding="12dp"
+                android:background="#99000000">
                 <TextView
                     android:layout_width="match_parent" android:id="@+id/tvTitle" android:text="This is Title"
-                    android:layout_height="wrap_content" android:textSize="24sp"/>
+                    android:layout_height="wrap_content" android:textSize="32sp" android:textColor="#FFFFFF"/>
                 <TextView
                     android:layout_width="match_parent" android:id="@+id/tvContent" android:text="This is content"
-                    android:layout_height="wrap_content" android:textSize="12sp"/>
+                    android:layout_height="wrap_content" android:textSize="18sp" android:textColor="#FFFFFF"/>
             </LinearLayout>
-        </LinearLayout>
+        </FrameLayout>
 
     </android.support.v7.widget.CardView>
 
