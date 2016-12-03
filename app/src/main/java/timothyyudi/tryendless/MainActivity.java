@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent searchIntent = new Intent(mCtx,SearchActivity.class);
+                searchIntent.putParcelableArrayListExtra("dataList",mDummyList);
                 startActivity(searchIntent);
             }
 
