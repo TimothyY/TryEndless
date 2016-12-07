@@ -3,13 +3,6 @@ package timothyyudi.tryendless;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-
-/**
- * Created by root on 11/22/2016.
- */
-
 public class DummyModel implements Parcelable{
 
     String title;
